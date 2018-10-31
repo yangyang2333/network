@@ -11,7 +11,7 @@ dialect_mat=getData(dialect_csv_path)
 name_adj_mat=get_undirect_mat(name_mat)
 dialect_adj_mat=get_undirect_mat(dialect_mat)
 hometown_adj_mat=get_undirect_mat(hometown_mat)
-print(hometown_mat.shape)
+
 def get_shortest_length(adj_mat):
     #i,j =adj_mat.shape
     dis_mat=np.zeros(adj_mat.shape)
@@ -53,6 +53,23 @@ def get_node_degree(adj_mat):
             if adj_mat[i][j]==1:
                 degree[i]=degree[i]+1
     return degree
+def get_degree_distribution(adj_mat):
+    degree=get_node_degree(adj_mat)
+    u = np.mean(degree)  # P(k)=(u)**k*e**(-u)/k!
+    print('平均度为',u)
+    p=np.zeros(len(degree))
+    for k in range(1,len(degree)):
+         k_jiecheng=get_factorial(k)
+         p[k]=u**k*math.exp(-u)/get_factorial(k)
+    # # print(degree)
+    plt.figure(figsize=(8,5))
+    a = plt.hist(degree, normed=1, bins=19)
+    plt.ylabel('num')
+    plt.xlabel('degree')
+    plt.plot(p, 'r')
+    plt.grid()
+    plt.show()
+
 def get_node_with_max_degree(degree):
     max=0
     index=0
@@ -68,9 +85,12 @@ def get_cluster_coefficient(adj_mat):
     for i in range(adj_mat.shape[0]):
         neighbor.clear()
         for j in range(adj_mat.shape[1]):
-            if adj_mat[i][j]!=0:
+            if adj_mat[i][j]==1:
                 neighbor.append(j)
-        C.append(2*get_edges_num_by_nodelist(neighbor,adj_mat)/(degree[i]*(degree[i]-1)))
+        if degree[i]==0:
+            C.append(0)
+        else:
+            C.append(2*get_edges_num_by_nodelist(neighbor,adj_mat)/(degree[i]*(degree[i]-1)))
     return C
 def get_edges_num_by_nodelist(nodelist,adj_mat):
     num=0
@@ -117,17 +137,36 @@ def get_next_neighbor(i,j,adj_mat):
             return k
 #鲁棒性分析
 def robust_analysis(adj_mat):
-    mode=0
-    print('请选择你想使用的攻击模式：1，随机攻击某节点，2，有意攻击某节点，默认使用随机攻击')
-    mode=input()
+    mat1 = adj_mat.copy()
+    mat2 = adj_mat.copy()
+    a, b, c, d = random_attack(mat1)
+    a1, b1, c1, d1 = intentional_attack(mat2)
+    # plt.plot(c,'*')
+    # plt.plot(c1,'-')
+    x = np.linspace(0, 1, name_adj_mat.shape[0])
+    p1, = plt.plot(x, d, 'r')
+    p2, = plt.plot(x, d1, 'b')
+    plt.grid(True)
+    plt.xlabel('f')
+    plt.ylabel('n')
+    l1 = plt.legend([p2, p1, ], ['intentional attack', 'random attack'])
+    plt.gca().add_artist(l1)
+    plt.savefig('max.jpg')
+    plt.show()
+    p3, = plt.plot(x, c, 'r')
+    p4, = plt.plot(x, c1, 'b')
+    l1 = plt.legend([p4, p3, ], ['intentional attack', 'random attack'])
+    plt.show()
     pass
 def random_attack(adj_mat):
     max_subgraph_size = []
     flag=np.zeros(adj_mat.shape[0])
-    i=0
+    i=1
     delete_flag=np.zeros(adj_mat.shape[0])
     branch_num=[]
-    while i<adj_mat.shape[0]:
+    # branch_num.append(get_branch_num(adj_mat)[0])
+    # max_subgraph_size=get_branch_num(adj_mat)[1]
+    while i<=adj_mat.shape[0]:
         node=math.floor(np.random.uniform(0,adj_mat.shape[0]))
 
         while flag[node]==1:
@@ -139,8 +178,8 @@ def random_attack(adj_mat):
             adj_mat[node][j]=-1
             adj_mat[j][node]=-1
         n,max=get_branch_num(adj_mat)
-        print('第',i,'次随机攻击后分支数目为:',n)
-        branch_num.append(n)
+        print('第',i,'次随机攻击后分支数目为:',n-i)
+        branch_num.append(n-i)
         max_subgraph_size.append(max)
         draw_figure(adj_mat)
         i=i+1
@@ -148,10 +187,11 @@ def random_attack(adj_mat):
 def intentional_attack(adj_mat):
     max_subgraph_size = []
     branch_num=[]
+    # branch_num.append(get_branch_num(adj_mat)[0])
     flag = np.zeros(adj_mat.shape[0])
-    i = 0
+    i = 1
     delete_flag = np.zeros(adj_mat.shape[0])
-    while i < adj_mat.shape[0]:
+    while i <=adj_mat.shape[0]:
         degree=get_node_degree(adj_mat)
         node = get_node_with_max_degree(degree)
         flag[node] = 1
@@ -161,24 +201,34 @@ def intentional_attack(adj_mat):
             adj_mat[node][j] = -1
             adj_mat[j][node] = -1
         n, max = get_branch_num(adj_mat)
-        print('第', i, '次故意攻击后分支数目为:', n)
-        branch_num.append(n)
+        print('第', i, '次故意攻击后分支数目为:', n-i)
+        branch_num.append(n-i)
         max_subgraph_size.append(max)
         draw_figure(adj_mat)
         i = i + 1
     return adj_mat, delete_flag, max_subgraph_size,branch_num
-mat1=name_adj_mat.copy()
-mat2=name_adj_mat.copy()
-
-a,b,c,d=random_attack(mat1)
-a1,b1,c1,d1=intentional_attack(mat2)
-# plt.plot(c,'*')
-# plt.plot(c1,'-')
-plt.plot(d,'r')
-plt.plot(d1,'b')
-plt.grid(True)
-plt.xlabel('delete nodes num')
-
-plt.ylabel('连通子块数量')
-plt.show()
-
+def get_coreness(G,n,coreness):
+    G2=G.copy()
+    for node in G2.nodes:
+        if G2.degree(node) <= n:
+            G.remove_node(node)
+            coreness[node]=n
+            return get_coreness(G,n,coreness)
+            break
+    return G
+def get_graph_coreness(adj_mat,coreness):
+    G = draw_figure(adj_mat)
+    print('工具包算出来的coreness',ns.core_number(G))
+    print(max(ns.core_number(G).values()))
+    G2 = G.copy()
+    n = 0
+    while len(G2.nodes) > 0:
+        G2 = get_coreness(G2, n,coreness)
+        #接下来几行代码是演示
+        # ns.draw(G2, ns.circular_layout(G2), node_color='b', edge_color='r', with_labels=True, font_size=18,
+        #         node_size=400)
+        # plt.show()
+        n = n + 1
+    return n-1,coreness
+#robust_analysis(hometown_adj_mat)
+#print(get_cluster_coefficient(hometown_adj_mat))

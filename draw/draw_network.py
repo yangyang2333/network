@@ -3,7 +3,6 @@ import numpy as np
 from file.datasets import getData
 import networkx as ns
 
-
 def get_undirect_mat(mat):
     width=(mat.shape)[0]
     height=(mat.shape)[1]
@@ -14,19 +13,10 @@ def get_undirect_mat(mat):
                 new_mat[i][j]=1
                 new_mat[j][i]=1
     return new_mat
-def get_coreness(G,n):
-    G2=G.copy()
-    for node in G2.nodes:
-        if G2.degree(node) <= n:
-            G.remove_node(node)
-            print(node,'被删除')
-            return get_coreness(G,n)
-            break
-    return G
+
 def draw_figure(adj_mat):
     G = ns.Graph()
     edges = []
-
     for i in range(len(adj_mat)):
         for j in range(i):
             if adj_mat[i][j] == 1:
@@ -40,16 +30,16 @@ def draw_figure(adj_mat):
     return G
 #
 # G=ns.Graph()
-name_csv_path='E:\\ideaProject\\network\\name.csv'
-hometown_csv_path='E:\\ideaProject\\network\\hometown.csv'
-dialect_csv_path='E:\\ideaProject\\network\\dialect.csv'
-name_mat=getData(name_csv_path)
-hometown_mat=getData(hometown_csv_path)
-dialect_mat=getData(dialect_csv_path)
-# print(name_mat.shape[0])
-#
-new_mat=get_undirect_mat(dialect_mat)
-draw_figure(new_mat)
+# name_csv_path='E:\\ideaProject\\network\\name.csv'
+# hometown_csv_path='E:\\ideaProject\\network\\hometown.csv'
+# dialect_csv_path='E:\\ideaProject\\network\\dialect.csv'
+# name_mat=getData(name_csv_path)
+# hometown_mat=getData(hometown_csv_path)
+# dialect_mat=getData(dialect_csv_path)
+# # print(name_mat.shape[0])
+# #
+# new_mat=get_undirect_mat(dialect_mat)
+# draw_figure(new_mat)
 # # print(new_mat[:20][:20])
 # edges=[]
 # for i in range(len(new_mat)):

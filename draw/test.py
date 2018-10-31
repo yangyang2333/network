@@ -29,15 +29,31 @@ from draw.draw_network import *
 # print(get_branch_num(hometown_adj_mat))
 #mat_attack,delete_flag=random_attack(name_adj_mat)
 # print(get_shortest_length(mat_attack))
-G=draw_figure(name_adj_mat)
-print(ns.core_number(G))
-print(max(ns.core_number(G).values()))
-G2=G.copy()
-n=0
-while len(G2.nodes)>0:
-    G2=get_coreness(G2,n)
-    ns.draw(G2, ns.circular_layout(G2), node_color='b', edge_color='r', with_labels=True, font_size=18, node_size=400)
-    plt.show()
-    n=n+1
-print(n-1)
+print("---------------------name-----------------------")
+coreness=np.zeros(name_adj_mat.shape[0])
+print('coreness',get_graph_coreness(name_adj_mat,coreness))
+print('cluster_coefficient',np.mean(get_cluster_coefficient(name_adj_mat)))
+print('degree',get_node_degree(name_adj_mat))
+print('degree_distribution',get_degree_distribution(name_adj_mat))
+print('average_shortest_length',get_average_shortest_length(name_adj_mat))
 
+print("---------------------HOMETOWN-----------------------")
+coreness=np.zeros(hometown_adj_mat.shape[0])
+print('coreness',get_graph_coreness(hometown_adj_mat,coreness))
+print('cluster_coefficient',np.mean(get_cluster_coefficient(hometown_adj_mat)))
+print('degree',get_node_degree(hometown_adj_mat))
+print('degree_distribution',get_degree_distribution(hometown_adj_mat))
+print('average_shortest_length',get_average_shortest_length(hometown_adj_mat))
+
+print("---------------------dialect-----------------------")
+coreness=np.zeros(dialect_adj_mat.shape[0])
+print('coreness',get_graph_coreness(dialect_adj_mat,coreness))
+print('cluster_coefficient',np.mean(get_cluster_coefficient(dialect_adj_mat)))
+print('degree',get_node_degree(dialect_adj_mat))
+print('degree_distribution',get_degree_distribution(dialect_adj_mat))
+print('average_shortest_length',get_average_shortest_length(dialect_adj_mat))
+
+#
+# G=draw_figure(dialect_adj_mat)
+# print(ns.clustering(G))
+# print(get_cluster_coefficient(dialect_adj_mat))
