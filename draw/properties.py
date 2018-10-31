@@ -178,6 +178,7 @@ plt.plot(d,'r')
 plt.plot(d1,'b')
 plt.grid(True)
 plt.xlabel('delete nodes num')
+
 plt.ylabel('连通子块数量')
 plt.show()
 
