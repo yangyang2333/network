@@ -25,6 +25,7 @@ def draw_figure(adj_mat):
     for i in range(len(adj_mat)):
             G.add_node(i)
     G.add_edges_from(edges)
+    plt.figure(figsize=[4,4])
     ns.draw(G, ns.circular_layout(G), node_color='b', edge_color='r', with_labels=True, font_size=18, node_size=400)
     plt.show()
     return G

@@ -62,7 +62,7 @@ def get_degree_distribution(adj_mat):
          k_jiecheng=get_factorial(k)
          p[k]=u**k*math.exp(-u)/get_factorial(k)
     # # print(degree)
-    plt.figure(figsize=(8,5))
+    plt.figure(figsize=(4,4))
     a = plt.hist(degree, normed=1, bins=19)
     plt.ylabel('num')
     plt.xlabel('degree')
@@ -143,19 +143,21 @@ def robust_analysis(adj_mat):
     a1, b1, c1, d1 = intentional_attack(mat2)
     # plt.plot(c,'*')
     # plt.plot(c1,'-')
+    plt.figure(figsize=[4, 4])
     x = np.linspace(0, 1, name_adj_mat.shape[0])
     p1, = plt.plot(x, d, 'r')
     p2, = plt.plot(x, d1, 'b')
     plt.grid(True)
     plt.xlabel('f')
     plt.ylabel('n')
-    l1 = plt.legend([p2, p1, ], ['intentional attack', 'random attack'])
+    l1 = plt.legend([p2, p1, ], ['intentional attack', 'random attack'],loc='upper left',fontsize='6')
     plt.gca().add_artist(l1)
+
     plt.savefig('max.jpg')
     plt.show()
     p3, = plt.plot(x, c, 'r')
     p4, = plt.plot(x, c1, 'b')
-    l1 = plt.legend([p4, p3, ], ['intentional attack', 'random attack'])
+    l1 = plt.legend([p4, p3, ], ['intentional attack', 'random attack'],loc='upper right')
     plt.show()
     pass
 def random_attack(adj_mat):
@@ -230,5 +232,5 @@ def get_graph_coreness(adj_mat,coreness):
         # plt.show()
         n = n + 1
     return n-1,coreness
-#robust_analysis(hometown_adj_mat)
+robust_analysis(hometown_adj_mat)
 #print(get_cluster_coefficient(hometown_adj_mat))
